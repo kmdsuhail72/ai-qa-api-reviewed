@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-qa-api-config
+  namespace: ai-qa-api
+  labels:
+    app.kubernetes.io/name: ai-qa-api
+data:
+  ENV: "production"
+  APP_NAME: "ai-qa-api"
+  SERVICE_VERSION: "0.2.0"
+
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+  METRICS_ENABLED: "true"
+
+  CACHE_ENABLED: "true"
+  CACHE_TTL_SECONDS: "300"
+  CACHE_PREFIX: "chat:answer:"
+
+  RATE_LIMIT_ENABLED: "true"
+  RATE_LIMIT_PER_MINUTE: "60"
+  RATE_LIMIT_WINDOW_SECONDS: "60"
+  # Sized for the 500 RPS peak (600 RPS ceiling), see SCALING.md 5.5
+  RATE_LIMIT_GLOBAL_PER_MINUTE: "36000"
+
+  # In-cluster Redis (e.g. Bitnami chart). For ElastiCache with TLS use
+  # rediss://<primary-endpoint>:6379/0 (see terraform/README.md).
+  REDIS_URL: "redis://redis-master.ai-qa-api.svc.cluster.local:6379/0"
+
+  LLM_PROVIDER: "openai"
+  LLM_MODEL: "gpt-4o-mini"
+  LLM_FALLBACK_MODEL: "gpt-4.1-nano"
+  LLM_BASE_URL: "https://api.openai.com/v1"
+  LLM_TIMEOUT_SECONDS: "15"
+  LLM_TOTAL_TIMEOUT_SECONDS: "45"
+  LLM_MAX_CONCURRENCY: "50"
+  LLM_QUEUE_TIMEOUT_SECONDS: "5"
+  LLM_HTTP_MAX_CONNECTIONS: "100"
+  LLM_MAX_RETRIES: "3"
+  LLM_BACKOFF_BASE_SECONDS: "0.5"
+  LLM_BACKOFF_MAX_SECONDS: "4.0"
+  LLM_MAX_TOKENS: "1024"
+  LLM_TEMPERATURE: "0.2"
+  LLM_SYSTEM_PROMPT: "You are a concise, helpful assistant."
+
+  # 1 worker per pod; scale with HPA. Multiple workers would split the
+  # Prometheus registry and the LLM concurrency semaphore per process.
+  UVICORN_WORKERS: "1"
+  DB_AUTO_CREATE: "true"

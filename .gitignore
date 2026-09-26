@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Env / secrets
+.env
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+.frontend-dev.db
+
+# Logs
+*.log
+
+# Kubernetes secrets (keep only the template)
+k8s/**/secret.yaml
+!k8s/**/secret.example.yaml
+
+# Local review report
+[Rr][Ee][Vv][Ii][Ee][Ww]_[Rr][Ee][Pp][Oo][Rr][Tt].[Mm][Dd]

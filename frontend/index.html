@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1220" />
+    <title>Orbit | AI QA Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/ui/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">✦</span>
+          <span>orbit<span class="brand-dot">.</span></span>
+        </div>
+        <div class="sidebar-copy">
+          <p class="eyebrow">AI QA CONSOLE</p>
+          <h1>Ask better<br /><em>questions.</em></h1>
+          <p class="muted">A focused workspace for fast, observable answers from your LLM gateway.</p>
+        </div>
+        <div class="status-card">
+          <span class="status-pulse"></span>
+          <div><strong id="connection-label">Ready to connect</strong><small>API session</small></div>
+        </div>
+        <div class="sidebar-footer">
+          <span>v0.2.0</span>
+          <a href="/docs" target="_blank" rel="noreferrer">API docs ↗</a>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">WORKSPACE / CHAT</p>
+            <h2>Knowledge, on demand.</h2>
+          </div>
+          <div class="user-area hidden" id="user-area">
+            <span class="avatar" id="user-avatar">?</span>
+            <div><strong id="username-label">Guest</strong><small id="role-label">Not signed in</small></div>
+            <button class="icon-button" id="logout-button" title="Sign out" aria-label="Sign out">↪</button>
+          </div>
+        </header>
+
+        <section class="login-panel" id="login-panel">
+          <div class="panel-icon">◎</div>
+          <div class="panel-content">
+            <p class="eyebrow">WELCOME BACK</p>
+            <h3>Sign in to your workspace</h3>
+            <p class="muted">Use your API credentials to start a secure chat session.</p>
+            <form id="login-form">
+              <label>Username<input id="username" name="username" autocomplete="username" placeholder="admin" required /></label>
+              <label>Password<input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required /></label>
+              <button class="primary-button" type="submit">Enter workspace <span>→</span></button>
+            </form>
+            <p class="form-error hidden" id="login-error"></p>
+          </div>
+        </section>
+
+        <section class="chat-layout hidden" id="chat-layout">
+          <div class="chat-panel">
+            <div class="conversation" id="conversation">
+              <div class="empty-state" id="empty-state">
+                <div class="orb">✦</div>
+                <h3>What are you curious about?</h3>
+                <p>Ask anything. Your answers are cached for speed and logged for insight.</p>
+                <div class="suggestions">
+                  <button data-question="Explain how Redis caching improves API performance in one paragraph.">Redis caching</button>
+                  <button data-question="Give me three practical tips for designing reliable APIs.">API reliability</button>
+                  <button data-question="What is the difference between horizontal and vertical scaling?">Scaling 101</button>
+                </div>
+              </div>
+            </div>
+            <form class="composer" id="chat-form">
+              <textarea id="question" rows="1" maxlength="4000" placeholder="Ask the gateway anything..." required></textarea>
+              <div class="composer-footer">
+                <span><kbd>Enter</kbd> to send · <kbd>Shift + Enter</kbd> for a new line</span>
+                <button class="send-button" type="submit" aria-label="Send question">↑</button>
+              </div>
+            </form>
+          </div>
+          <aside class="insights">
+            <div class="insights-heading"><span class="eyebrow">SESSION INSIGHTS</span><span class="live-dot">LIVE</span></div>
+            <div class="metric-grid">
+              <div class="metric"><span>QUESTIONS</span><strong id="question-count">0</strong></div>
+              <div class="metric"><span>CACHE HITS</span><strong id="cache-count">0</strong></div>
+              <div class="metric"><span>LAST LATENCY</span><strong id="latency-value">—</strong></div>
+            </div>
+            <div class="history-heading"><span class="eyebrow">RECENT HISTORY</span><button id="refresh-history" title="Refresh history">↻</button></div>
+            <div class="history-list" id="history-list"><p class="muted history-empty">Your recent questions will appear here.</p></div>
+          </aside>
+        </section>
+      </main>
+    </div>
+    <div class="toast hidden" id="toast"></div>
+    <script src="/ui/app.js"></script>
+  </body>
+</html>

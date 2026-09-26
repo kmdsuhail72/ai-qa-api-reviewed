@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .box{fill:#ffffff;stroke:#334155;stroke-width:1.5;rx:10}
+      .t{font-size:15px;font-weight:600;fill:#0f172a}
+      .s{font-size:12px;fill:#475569}
+      .e{stroke:#475569;stroke-width:1.6;fill:none;marker-end:url(#a)}
+      .d{stroke:#94a3b8;stroke-width:1.4;fill:none;stroke-dasharray:5 4;marker-end:url(#a)}
+      .grp{fill:#eff6ff;stroke:#93c5fd;stroke-width:1.2;stroke-dasharray:6 4}
+      .lbl{font-size:11px;fill:#64748b}
+    </style>
+  </defs>
+  <rect width="1100" height="620" fill="#f8fafc"/>
+  <text x="30" y="36" font-size="20" font-weight="700" fill="#0f172a">AI QA API - production architecture</text>
+  <text x="30" y="58" class="s">Users → Load Balancer → FastAPI instances → Redis / Queue → LLM Gateway → LLM APIs, with PostgreSQL for persistent data</text>
+
+  <!-- Users -->
+  <rect x="30" y="250" width="120" height="70" class="box"/>
+  <text x="90" y="280" text-anchor="middle" class="t">Users</text>
+  <text x="90" y="300" text-anchor="middle" class="s">web UI / API clients</text>
+
+  <!-- LB -->
+  <rect x="190" y="240" width="150" height="90" class="box"/>
+  <text x="265" y="268" text-anchor="middle" class="t">Load Balancer</text>
+  <text x="265" y="288" text-anchor="middle" class="s">ALB + WAF / NGINX</text>
+  <text x="265" y="304" text-anchor="middle" class="s">TLS, per-IP limit,</text>
+  <text x="265" y="320" text-anchor="middle" class="s">health checks</text>
+
+  <!-- K8s group -->
+  <rect x="375" y="95" width="370" height="400" rx="14" class="grp"/>
+  <text x="390" y="118" font-size="13" font-weight="600" fill="#1d4ed8">Kubernetes / ECS - HPA 3 → 30 pods, PDB minAvailable 2</text>
+
+  <rect x="395" y="135" width="330" height="125" class="box"/>
+  <text x="560" y="160" text-anchor="middle" class="t">FastAPI instances (stateless)</text>
+  <text x="410" y="182" class="s">• JWT auth + RBAC (admin / user / read_only)</text>
+  <text x="410" y="200" class="s">• per-user + global rate limit (Redis)</text>
+  <text x="410" y="218" class="s">• answer cache lookup / write (Redis)</text>
+  <text x="410" y="236" class="s">• /health  /health/live  /health/ready  /metrics</text>
+
+  <rect x="395" y="300" width="330" height="175" class="box"/>
+  <text x="560" y="325" text-anchor="middle" class="t">LLM Gateway (in-process)</text>
+  <text x="410" y="348" class="s">• concurrency semaphore → 503 when saturated</text>
+  <text x="410" y="366" class="s">• per-call timeout + total budget → 504</text>
+  <text x="410" y="384" class="s">• retry 429 / 5xx / timeout, exp. backoff + jitter</text>
+  <text x="410" y="402" class="s">• no retry on 4xx client errors</text>
+  <text x="410" y="420" class="s">• fallback model after primary exhausted</text>
+  <text x="410" y="438" class="s">• token + latency metrics per model</text>
+  <text x="410" y="456" class="s">• pooled HTTP client (keep-alive)</text>
+  <path d="M560,260 L560,298" class="e"/>
+
+  <!-- Redis -->
+  <rect x="790" y="120" width="280" height="110" class="box"/>
+  <text x="930" y="146" text-anchor="middle" class="t">Redis / Queue</text>
+  <text x="805" y="168" class="s">• answer cache (sha256 of normalized Q)</text>
+  <text x="805" y="186" class="s">• sliding-window rate limiter (atomic Lua)</text>
+  <text x="805" y="204" class="s">• queue broker for async jobs (design, §4)</text>
+  <text x="817" y="222" class="lbl">fail-open: app degrades, keeps serving</text>
+
+  <!-- Postgres -->
+  <rect x="790" y="255" width="280" height="80" class="box"/>
+  <text x="930" y="281" text-anchor="middle" class="t">PostgreSQL</text>
+  <text x="805" y="303" class="s">users, roles, chat_logs (tokens, latency,</text>
+  <text x="805" y="320" class="s">status) → history + /reports/usage</text>
+
+  <!-- LLM APIs -->
+  <rect x="790" y="370" width="280" height="105" class="box"/>
+  <text x="930" y="396" text-anchor="middle" class="t">LLM APIs</text>
+  <text x="805" y="418" class="s">primary model (e.g. gpt-4o-mini)</text>
+  <text x="805" y="436" class="s">fallback model (cheaper / other provider)</text>
+  <text x="805" y="454" class="s">any OpenAI-compatible endpoint</text>
+
+  <!-- Observability -->
+  <rect x="395" y="530" width="330" height="70" class="box"/>
+  <text x="560" y="556" text-anchor="middle" class="t">Prometheus + Grafana + alerts</text>
+  <text x="560" y="576" text-anchor="middle" class="s">scrapes /metrics with METRICS_TOKEN; JSON logs → Loki/CloudWatch</text>
+
+  <!-- IdP -->
+  <rect x="190" y="120" width="150" height="80" class="box" style="stroke-dasharray:5 4"/>
+  <text x="265" y="148" text-anchor="middle" class="t">Identity Provider</text>
+  <text x="265" y="168" text-anchor="middle" class="s">OIDC SSO (future):</text>
+  <text x="265" y="184" text-anchor="middle" class="s">Okta / Entra / Auth0</text>
+
+  <!-- edges -->
+  <path d="M150,285 L188,285" class="e"/>
+  <path d="M340,285 L370,285 L370,200 L393,200" class="e"/>
+  <path d="M725,175 L788,175" class="e"/>
+  <path d="M725,240 L760,240 L760,295 L788,295" class="e"/>
+  <path d="M725,420 L788,420" class="e"/>
+  <path d="M560,528 L560,477" class="d"/>
+  <path d="M90,250 L90,160 L188,160" class="d"/>
+  <text x="96" y="205" class="lbl">login → JWT</text>
+  <text x="742" y="168" class="lbl">cache/RL</text>
+  <text x="742" y="412" class="lbl">HTTPS</text>
+</svg>

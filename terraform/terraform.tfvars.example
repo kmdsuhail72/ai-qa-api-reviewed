@@ -1,0 +1,9 @@
+aws_region         = "us-east-1"
+environment        = "prod"
+container_image_tag = "0.8.0"
+
+# Supply real values through a private *.tfvars file or TF_VAR_* environment variables.
+db_password = "replace-me"
+jwt_secret  = "replace-me-with-a-long-random-secret"
+llm_api_key = "replace-me"
+metrics_token = "replace-me"

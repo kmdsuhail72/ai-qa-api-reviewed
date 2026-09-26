@@ -1,0 +1,25 @@
+# Prometheus Operator scrape config (not in kustomization: needs the CRD).
+# /metrics is protected; Prometheus authenticates with the METRICS_TOKEN
+# value stored in the ai-qa-api-secrets Secret.
+#
+#   kubectl apply -f k8s/base/servicemonitor.example.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ai-qa-api
+  namespace: ai-qa-api
+  labels:
+    app.kubernetes.io/name: ai-qa-api
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-qa-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      authorization:
+        type: Bearer
+        credentials:
+          name: ai-qa-api-secrets
+          key: METRICS_TOKEN

@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ai-qa-api
+  namespace: ai-qa-api
+  labels:
+    app.kubernetes.io/name: ai-qa-api
+spec:
+  # Keep at least 2 pods serving during node drains / cluster upgrades.
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-qa-api
